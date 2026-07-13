@@ -1,0 +1,353 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+/*
+ ---break---
+ */
+/* Theme переключаем через `[data-theme="dark"]` атрибут (см. ThemeToggle.tsx).
+ * shadcn-primitive'ы ожидают Tailwind dark-modifier — переключаем variant
+ * на наш селектор. */
+@custom-variant dark ([data-theme="dark"] &);
+
+/*
+ * .blik · brand palette
+ * Канонiчный источник: ../../../../icon/blik/palette/palette.css
+ * (тот же набор токенов используется в macOS-приложении: BlikPalette.swift).
+ * При изменении палитры — синхронизировать все три места.
+ */
+
+/* ===== Светлая тема — по умолчанию ===== */
+:root {
+  --bg-primary: #f4f1eb;
+  --bg-secondary: #fbfaf6;
+  --bg-tertiary: #f0ece2;
+  --text-primary: #0f1318;
+  --text-secondary: #5a6470;
+  --text-tertiary: #8a93a0;
+  --accent: #007479;
+  --accent-hover: #005459;
+  --border-primary: rgba(0, 60, 64, 0.18);
+  --border-subtle: rgba(0, 60, 64, 0.10);
+  --danger: #d63249;
+  --success: #008458;
+  --badge-bg: #007479;
+  --badge-text: #faf9f5;
+
+  /* shadcn-семантика — alias'ы поверх нашей палитры.
+   * shadcn-компоненты используют `bg-primary`/`bg-background`/`text-foreground` etc.
+   * Эти алиасы делают их совместимыми, не вводя параллельной цветовой системы.
+   * Наш `--accent` (бренд-teal) намеренно перекрывает shadcn-семантику «accent
+   * surface» — для всех акцентных кнопок/hover'ов используем брендовый цвет. */
+  --background: var(--bg-primary);
+  --foreground: var(--text-primary);
+  --card: var(--bg-secondary);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-secondary);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--accent);
+  --primary-foreground: #ffffff;
+  --secondary: var(--bg-tertiary);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--bg-tertiary);
+  --muted-foreground: var(--text-secondary);
+  --accent-foreground: #ffffff;
+  --destructive: var(--danger);
+  --destructive-foreground: #ffffff;
+  --border: var(--border-primary);
+  --input: var(--border-subtle);
+  --ring: var(--accent);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: var(--bg-secondary);
+  --sidebar-foreground: var(--text-primary);
+  --sidebar-primary: var(--accent);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--bg-tertiary);
+  --sidebar-accent-foreground: var(--text-primary);
+  --sidebar-border: var(--border-primary);
+  --sidebar-ring: var(--accent);
+}
+
+/* ===== Logo orb — единый для обеих тем =====
+ * Эталон: icon/blik/layer-1-glow.svg + layer-2-orb.svg.
+ * Орб = mint-highlight → teal mid → deep teal edge + bottom-right inner shadow.
+ * Glow = teal-аура (4 стопа), применяется через filter: blur(...) в Logo.tsx.
+ */
+:root {
+  --logo-orb-bg:
+    radial-gradient(circle at 78% 84%, rgba(0, 8, 20, 0.38) 0%, rgba(0, 8, 20, 0) 65%),
+    radial-gradient(circle at 38% 32%, #cbf3f2 0%, #7fdcde 22%, #2fb3b8 50%, #0a7a7e 78%, #003c40 100%);
+  --logo-orb-rim: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+  --logo-orb-glow: radial-gradient(circle, rgba(47, 179, 184, 0.85) 0%, rgba(0, 116, 121, 0.42) 30%, rgba(0, 116, 121, 0.14) 60%, rgba(0, 116, 121, 0) 100%);
+}
+
+/* ===== Тёмная тема ===== */
+[data-theme="dark"] {
+  --bg-primary: #0a0d14;
+  --bg-secondary: #11151f;
+  --bg-tertiary: #161b27;
+  --text-primary: #e6e8ee;
+  --text-secondary: #8b93a6;
+  --text-tertiary: #5e6678;
+  --accent: #2fb3b8;
+  --accent-hover: #28999d;
+  --border-primary: rgba(255, 255, 255, 0.16);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --danger: #ff4d6d;
+  --success: #00d68f;
+  --badge-bg: #2fb3b8;
+  --badge-text: #0a0d14;
+}
+
+/* ===== Бренд-шрифт (мono для wordmark) ===== */
+:root {
+  --blik-font-mono: "JetBrains Mono", "SF Mono", "Berkeley Mono", ui-monospace, monospace;
+}
+
+@theme {
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-tertiary: var(--bg-tertiary);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-border-primary: var(--border-primary);
+  --color-border-subtle: var(--border-subtle);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-badge-bg: var(--badge-bg);
+  --color-badge-text: var(--badge-text);
+}
+
+/* ===== Базовые стили ===== */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+/* ===== Утилиты для текста ===== */
+.text-accent {
+  color: var(--accent);
+}
+
+.text-danger {
+  color: var(--danger);
+}
+
+.text-success {
+  color: var(--success);
+}
+
+/* ===== Dot-grid паттерн для фона hero ===== */
+.dot-grid {
+  background-image: radial-gradient(circle, var(--border-subtle) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ===== Анимации ===== */
+@keyframes glow-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.15;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.2;
+  }
+}
+
+@keyframes live-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+}
+
+/* ============================================================
+ * Neon Border
+ * ============================================================
+ * @property --neon-angle анимирует угол conic-gradient.
+ * Нет transform → filter не мешает анимации.
+ *
+ * .neon-wrap — контейнер
+ *   ├── .neon-glow  — размытая копия обводки (animated glow)
+ *   ├── .neon-border — чёткая обводка
+ *   └── .neon-content — контент поверх
+ */
+
+@property --neon-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@property --neon-glow-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes neon-rotate {
+  to { --neon-angle: 360deg; }
+}
+
+@keyframes neon-glow-rotate {
+  to { --neon-glow-angle: 360deg; }
+}
+
+.neon-wrap {
+  position: relative;
+  border-radius: var(--neon-r, 10px);
+}
+
+/* Sharp border */
+.neon-border {
+  position: relative;
+  border-radius: var(--neon-r, 10px);
+  padding: var(--neon-w, 1.5px);
+  background: conic-gradient(
+    from var(--neon-angle),
+    #00b0b7 0deg,
+    #00b0b7 126deg,
+    #d4882e 180deg,
+    #d4882e 306deg,
+    #00b0b7 360deg
+  );
+  animation: neon-rotate var(--neon-speed, 3s) linear infinite;
+  z-index: 1;
+}
+
+.neon-border::after {
+  content: '';
+  position: absolute;
+  inset: var(--neon-w, 1.5px);
+  border-radius: calc(var(--neon-r, 10px) - var(--neon-w, 1.5px));
+  background: var(--neon-bg, var(--bg-primary));
+  z-index: 0;
+}
+
+/* Animated glow — blurred ring */
+.neon-glow {
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--neon-r, 10px);
+  padding: calc(var(--neon-w, 1.5px) * 2);
+  background: conic-gradient(
+    from var(--neon-glow-angle),
+    #00b0b7 0deg,
+    #00b0b7 126deg,
+    #d4882e 180deg,
+    #d4882e 306deg,
+    #00b0b7 360deg
+  );
+  animation: neon-glow-rotate var(--neon-speed, 3s) linear infinite;
+  z-index: 0;
+  filter: blur(var(--neon-glow-blur, 12px));
+  opacity: var(--neon-glow-opacity, 0.6);
+}
+
+.neon-glow::after {
+  content: '';
+  position: absolute;
+  inset: calc(var(--neon-w, 1.5px) * 2);
+  border-radius: calc(var(--neon-r, 10px) - var(--neon-w, 1.5px) * 2);
+  background: var(--neon-bg, var(--bg-primary));
+  z-index: 1;
+}
+
+.neon-content {
+  position: relative;
+  z-index: 2;
+  border-radius: calc(var(--neon-r, 10px) - var(--neon-w, 1.5px));
+  overflow: hidden;
+}
+
+/*
+ ---break---
+ */
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  --animate-fade-spin: fade-spin 1.2s linear infinite;
+  @keyframes fade-spin {
+  0% {
+    opacity: 0.15;
+    }
+  100% {
+    opacity: 1;
+    }
+  }
+}
+/*
+ ---break---
+ */
+/* shadcn dark-overrides — встроены в [data-theme="dark"] (см. выше).
+ * Этот блок оставлен как заглушка для shadcn-CLI re-init'ов: если он попытается
+ * вернуть `.dark { ... }`, перетереть его этим комментарием. */
+/*
+ ---break---
+ */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
