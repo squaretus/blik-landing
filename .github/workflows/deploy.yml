@@ -25,7 +25,7 @@ jobs:
       - run: node --test 'tests/*.test.mjs'
       - run: |
           mkdir _site
-          cp -r index.html CNAME favicon-dark.svg favicon-light.svg fonts media _site/
+          cp -r index.html CNAME robots.txt sitemap.xml favicon-dark.svg favicon-light.svg fonts media _site/
       - uses: actions/configure-pages@v5
         with:
           enablement: true
