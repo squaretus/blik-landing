@@ -41,8 +41,9 @@ test('в пункте «интерфейсы» три картинки со spot
   }
 });
 
-test('у всех изображений есть alt-текст', () => {
+test('у всех изображений есть alt-текст (кроме декоративного пикселя метрики)', () => {
   for (const [tag] of html.matchAll(/<img [^>]*>/g)) {
+    if (tag.includes('mc.yandex.ru/watch')) continue;
     assert.match(tag, / alt="[^"]+"/, `img без alt: ${tag.slice(0, 80)}`);
   }
 });
@@ -55,6 +56,15 @@ test('звёздный фон: на hero — вверх, в CTA — перевё
 test('в шапке есть тёмный бадж GitHub stars репозитория squaretus/blik', () => {
   assert.match(html, /<a class="github-button" href="https:\/\/github\.com\/squaretus\/blik" data-color-scheme="dark"[^>]*data-show-count="true"/);
   assert.match(html, /<script async defer src="https:\/\/buttons\.github\.io\/buttons\.js"><\/script>/);
+});
+
+test('Яндекс.Метрика: счётчик 110731912 и цели подключены', () => {
+  assert.match(html, /mc\.yandex\.ru\/metrika\/tag\.js\?id=110731912/);
+  assert.match(html, /ym\(110731912, 'init'/);
+  assert.match(html, /<noscript><div><img src="https:\/\/mc\.yandex\.ru\/watch\/110731912"/);
+  for (const goal of ['download_click', 'scroll_to_download', 'github_star_click']) {
+    assert.ok(html.includes(`'${goal}'`), `нет цели ${goal}`);
+  }
 });
 
 test('CNAME указывает на blik.app', () => {
