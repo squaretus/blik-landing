@@ -568,7 +568,7 @@ a:hover { color: #7FDCDE; }
     <h2><span>Установите</span><span class="orb"></span><span class="name">blik</span></h2>
     <p class="lede">Скачайте .pkg из последнего релиза — установка через визард, дальше всё работает само.</p>
     <div class="cta-row">
-      <a class="btn-download" href="https://github.com/squaretus/blik/releases/latest">↓ скачать</a>
+      <a class="btn-download" href="https://github.com/squaretus/blik/releases/latest" target="_blank" rel="noopener">↓ скачать</a>
     </div>
     <footer class="site-footer"><span>© 2026 blik</span></footer>
   </section>
@@ -628,7 +628,8 @@ a:hover { color: #7FDCDE; }
 
   var download = document.querySelector('.btn-download');
 
-  // клик по кнопке «скачать»
+  // клик по кнопке «скачать»: ссылка открывается в новой вкладке (target=_blank),
+  // поэтому страница не выгружается и reachGoal гарантированно успевает уйти
   download.addEventListener('click', function () { goal('download_click'); });
 
   // долистал до кнопки «скачать» (один раз за визит)
@@ -645,11 +646,20 @@ a:hover { color: #7FDCDE; }
   }
 
   // клик по баджу GitHub stars: кнопка живёт в кросс-доменном iframe
-  // (закрытый shadow root), клик внутри него ловится только по уходу
-  // фокуса из окна на элемент внутри .gh-stars
+  // (закрытый shadow root), DOM-клик не поймать. Детектим так: окно теряет
+  // фокус, пока курсор находится над баджем. activeElement читаем через
+  // setTimeout — в момент blur фокус ещё не переехал на iframe.
+  var stars = document.querySelector('.gh-stars');
+  var overStars = false;
+  stars.addEventListener('pointerenter', function () { overStars = true; });
+  stars.addEventListener('pointerleave', function () { overStars = false; });
   window.addEventListener('blur', function () {
-    var ae = document.activeElement;
-    if (ae && ae.closest && ae.closest('.gh-stars')) goal('github_star_click');
+    setTimeout(function () {
+      var ae = document.activeElement;
+      if (overStars || (ae && ae.closest && ae.closest('.gh-stars'))) {
+        goal('github_star_click');
+      }
+    }, 0);
   });
 })();
 </script>
