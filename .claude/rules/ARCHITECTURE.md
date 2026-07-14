@@ -4,7 +4,7 @@
 - Чистый статический сайт: один `index.html`, ноль зависимостей и сборки.
 - JetBrains Mono self-hosted (variable woff2), анимированные AVIF-демо, spotlight-эффект на vanilla JS/CSS.
 - Тесты: `node --test`, smoke-проверки целостности страницы.
-- Хостинг: GitHub Pages (репо `squaretus/blik-landing`), кастомный домен `blik.app`.
+- Хостинг: GitHub Pages (репо `squaretus/blik-landing`), кастомный домен `blik-app.ru`.
 
 ## Персистентность
 БД нет — статический сайт без серверной части. Правило UUID-PK неприменимо.
@@ -32,7 +32,7 @@ source_docs_for_landing/ — исходники медиа (не в git)
 ## Деплой
 - Push в `master` → workflow `deploy.yml` → тесты → `_site/` из явного списка файлов → GitHub Pages.
 - Домен: `CNAME` в корне попадает в артефакт; custom domain включён в Settings → Pages.
-- Прод-URL: https://blik.app (fallback https://squaretus.github.io/blik-landing/).
+- Прод-URL: https://blik-app.ru (fallback https://squaretus.github.io/blik-landing/).
 
 ### Базовый образ
 

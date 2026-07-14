@@ -67,6 +67,6 @@ test('Яндекс.Метрика: счётчик 110731912 и цели подк
   }
 });
 
-test('CNAME указывает на blik.app', () => {
-  assert.equal(readFileSync(join(root, 'CNAME'), 'utf8').trim(), 'blik.app');
+test('CNAME указывает на blik-app.ru', () => {
+  assert.equal(readFileSync(join(root, 'CNAME'), 'utf8').trim(), 'blik-app.ru');
 });
