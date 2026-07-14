@@ -97,3 +97,10 @@ test('SEO: robots.txt и sitemap.xml попадают в деплой', () => {
   const deploy = readFileSync(join(root, '.github/workflows/deploy.yml'), 'utf8');
   assert.match(deploy, /cp -r [^\n]*robots\.txt[^\n]*sitemap\.xml[^\n]*_site\//);
 });
+
+test('IndexNow: ключ-файл существует, валиден и попадает в деплой', () => {
+  const key = 'e97bfc5778e54c1574e7682f01a5c514';
+  assert.equal(readFileSync(join(root, `${key}.txt`), 'utf8').trim(), key);
+  const deploy = readFileSync(join(root, '.github/workflows/deploy.yml'), 'utf8');
+  assert.ok(deploy.includes(`${key}.txt`), 'ключ-файл не в списке публикации deploy.yml');
+});
