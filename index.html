@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>blik — мониторинг Mac, который важен</title>
+<meta name="description" content="Температуры, загрузка CPU и GPU, память, диск и обороты кулеров — в реальном времени, с локальной историей метрик.">
+<meta property="og:title" content="blik — мониторинг Mac, который важен">
+<meta property="og:description" content="Температуры, загрузка CPU и GPU, память, диск и обороты кулеров — в реальном времени, с локальной историей метрик.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://blik.app/">
+<link rel="icon" type="image/svg+xml" href="favicon-light.svg" media="(prefers-color-scheme: light)">
+<link rel="icon" type="image/svg+xml" href="favicon-dark.svg">
+<style>
+/* cyrillic-ext italic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: italic;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("fonts/jbm-italic-cyrillic-ext.woff2") format("woff2");
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic italic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: italic;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("fonts/jbm-italic-cyrillic.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek italic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: italic;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("fonts/jbm-italic-greek.woff2") format("woff2");
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese italic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: italic;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("fonts/jbm-italic-vietnamese.woff2") format("woff2");
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext italic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: italic;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("fonts/jbm-italic-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin italic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: italic;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("fonts/jbm-italic-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext normal */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("fonts/jbm-regular-cyrillic-ext.woff2") format("woff2");
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic normal */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("fonts/jbm-regular-cyrillic.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek normal */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("fonts/jbm-regular-greek.woff2") format("woff2");
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese normal */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("fonts/jbm-regular-vietnamese.woff2") format("woff2");
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext normal */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("fonts/jbm-regular-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin normal */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("fonts/jbm-regular-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #0A0D14;
+  color: #E6E8EE;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: #2FB3B8; text-decoration: none; }
+a:hover { color: #7FDCDE; }
+::selection { background: rgba(47, 179, 184, 0.30); }
+
+@keyframes orbPulse {
+  0%, 100% { transform: scale(1); opacity: .9; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+
+.panel {
+  background: #0A0D14;
+  overflow: hidden;
+}
+
+/* ---- чёрные «пропасти» — hero и CTA ---- */
+
+.chasm {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  overflow: hidden;
+}
+.chasm--hero {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 120px 72px;
+  background: radial-gradient(135% 105% at 50% 38%, #000 0%, #020409 34%, #0e141e 100%);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,0.05), inset 0 0 250px 80px rgba(0,0,0,0.98), inset 0 140px 160px -70px rgba(0,0,0,0.96), inset 0 -120px 160px -60px rgba(0,0,0,0.92), inset 170px 0 180px -110px rgba(0,0,0,0.9), inset -170px 0 180px -110px rgba(0,0,0,0.9);
+}
+.chasm--cta {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 96px 72px 36px;
+  background: radial-gradient(135% 120% at 50% 62%, #000 0%, #020409 34%, #0e141e 100%);
+  box-shadow: inset 0 -2px 0 rgba(255,255,255,0.05), inset 0 0 250px 80px rgba(0,0,0,0.98), inset 0 -140px 160px -70px rgba(0,0,0,0.96), inset 0 120px 160px -60px rgba(0,0,0,0.92), inset 170px 0 180px -110px rgba(0,0,0,0.9), inset -170px 0 180px -110px rgba(0,0,0,0.9);
+}
+
+.wordmark {
+  position: relative;
+  margin: 0;
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  white-space: nowrap;
+  font: 500 clamp(30px, 4.8vw, 56px)/1.15 'JetBrains Mono', monospace;
+  letter-spacing: -0.04em;
+  color: #E6E8EE;
+  text-shadow: 0 2px 30px rgba(0,0,0,0.9);
+}
+.wordmark .dim { color: #8B93A6; font-weight: 500; }
+
+.orb {
+  align-self: flex-end;
+  width: .3em;
+  height: .3em;
+  margin: 0 .125em .09em;
+  border-radius: 50%;
+  background: radial-gradient(circle at 78% 84%, rgba(0,8,20,0.38) 0%, rgba(0,8,20,0) 65%), radial-gradient(circle at 38% 32%, #cbf3f2 0%, #7fdcde 22%, #2fb3b8 50%, #0a7a7e 78%, #003c40 100%);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18), 0 0 18px rgba(47,179,184,0.45);
+  animation: orbPulse 4s ease-in-out infinite;
+}
+
+.chasm--hero .lede {
+  position: relative;
+  margin: 40px auto 0;
+  max-width: 620px;
+  font: 400 17px/1.75 'JetBrains Mono', monospace;
+  color: #8B93A6;
+}
+
+/* ---- звёздный фон (адаптация 21st.dev bundui stars): три слоя box-shadow
+   звёзд, бесшовный цикл 2000px; подложка секций не меняется ---- */
+
+.stars {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.stars__layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  background: transparent;
+  animation: stars-up linear infinite;
+}
+.stars--down .stars__layer { animation-name: stars-down; }
+
+@keyframes stars-up {
+  from { transform: translateY(0); }
+  to { transform: translateY(-2000px); }
+}
+@keyframes stars-down {
+  from { transform: translateY(-2000px); }
+  to { transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stars__layer { animation: none; }
+}
+
+
+.chasm--cta h2 {
+  position: relative;
+  margin: auto 0 22px; /* auto сверху + auto у футера = контент по центру, футер прижат вниз */
+  font: 300 clamp(30px, 4.6vw, 54px)/1.1 'JetBrains Mono', monospace;
+  letter-spacing: -0.04em;
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  white-space: nowrap;
+}
+.chasm--cta h2 .orb { margin: 0 .1em .11em .26em; }
+.chasm--cta h2 .name { font-weight: 500; }
+.chasm--cta .lede {
+  position: relative;
+  margin: 0 auto 42px;
+  max-width: 480px;
+  font: 400 15px/1.75 'JetBrains Mono', monospace;
+  color: #8B93A6;
+}
+.cta-row {
+  position: relative;
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.btn-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #2FB3B8;
+  color: #05070c;
+  font: 600 15px/1 'JetBrains Mono', monospace;
+  padding: 18px 30px;
+  border-radius: 999px;
+}
+.btn-download:hover { background: #7FDCDE; color: #05070c; }
+
+/* ---- скролл-нарратив, наезжает на чёрные секции ---- */
+
+.work {
+  position: relative;
+  z-index: 2;
+  margin-top: -56px;
+  margin-bottom: -56px;
+  border-radius: 32px;
+  background: #0A0D14;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 -34px 70px -22px rgba(0,0,0,0.92), 0 34px 70px -22px rgba(0,0,0,0.92);
+  padding: 40px 72px;
+}
+
+.feature {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+  padding: 56px 0;
+  max-width: 1036px;
+  margin: 0 auto;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+.feature:first-child { padding-top: 44px; border-top: none; }
+.feature--rev > .glow { order: -1; }
+.feature--pile { padding: 64px 0 72px; }
+
+.kicker {
+  font: 400 11px/1 'JetBrains Mono', monospace;
+  letter-spacing: .2em;
+  color: #5E6678;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.feature h3 {
+  margin: 0 0 16px;
+  font: 400 32px/1.16 'JetBrains Mono', monospace;
+  letter-spacing: -0.035em;
+  color: #E6E8EE;
+}
+.feature p {
+  margin: 0;
+  max-width: 440px;
+  font: 400 15px/1.75 'JetBrains Mono', monospace;
+  color: #8B93A6;
+}
+
+.clip {
+  margin: 0;
+  position: relative;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #11151F;
+}
+.clip img { display: block; width: 100%; height: auto; }
+
+/* ---- spotlight-обёртка: одна и та же для видео и пачки интерфейсов ---- */
+
+/* .glow не создаёт stacking context (без transform и z-index):
+   псевдоэлементы свечения с отрицательным z-index уходят ПОД карточки */
+.glow {
+  position: relative;
+  border-radius: 14px;
+}
+
+.pile { position: relative; height: 385px; }
+.pile .glow { position: absolute; }
+.glow--tall { top: 0; right: 0; width: 34%; --rot: 5deg; }
+.glow--mid { top: 24px; left: 0; width: 72%; --rot: -4.5deg; }
+.glow--front { top: 155px; left: 20%; width: 62%; --rot: 3.5deg; }
+
+.pile .clip {
+  border-color: rgba(255,255,255,0.12);
+  transform: rotate(var(--rot, 0deg));
+  box-shadow: 0 28px 58px -20px rgba(0,0,0,0.85);
+}
+
+/* spotlight-рамка (адаптация 21st.dev spotlight-card): цветное кольцо и
+   blur-ореол рисуются позади карточек — видны только по внешним краям */
+.glow::before,
+.glow::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  border-radius: 17px;
+  transform: rotate(var(--rot, 0deg));
+}
+.glow::before {
+  inset: -3px;
+  z-index: -1;
+  background:
+    radial-gradient(120px 120px at calc(var(--gx, -500) * 1px + 3px) calc(var(--gy, -500) * 1px + 3px),
+      hsl(0 0% 100% / 0.85), transparent 65%),
+    radial-gradient(230px 230px at calc(var(--gx, -500) * 1px + 3px) calc(var(--gy, -500) * 1px + 3px),
+      hsl(var(--hue, 183) 85% 58%), transparent 72%);
+  filter: brightness(1.6);
+}
+.glow::after {
+  inset: -36px;
+  z-index: -2;
+  border-radius: 48px;
+  background:
+    radial-gradient(300px 300px at calc(var(--gx, -500) * 1px + 36px) calc(var(--gy, -500) * 1px + 36px),
+      hsl(var(--hue, 183) 90% 55% / 0.45), transparent 70%);
+  filter: blur(26px);
+}
+
+.site-footer {
+  position: relative;
+  margin-top: auto;
+  padding-top: 60px;
+  font: 400 12px/1 'JetBrains Mono', monospace;
+  color: #5E6678;
+}
+
+.gh-stars {
+  position: absolute;
+  top: 20px;
+  right: 16px;
+  z-index: 5;
+  min-height: 30px;
+}
+.gh-stars iframe { display: block; border: 0; }
+/* фолбэк-ссылка до загрузки buttons.js */
+.gh-stars > a { font: 400 12px/30px 'JetBrains Mono', monospace; color: #5E6678; }
+
+/* на тач-устройствах курсора нет — spotlight отключаем */
+@media (hover: none) {
+  .glow::before,
+  .glow::after { display: none; }
+}
+
+/* ---- мобильная раскладка ---- */
+
+@media (max-width: 860px) {
+  .chasm--hero { padding: 90px 24px; }
+  .chasm--cta { padding: 80px 24px 28px; }
+  .wordmark, .chasm--cta h2 { white-space: normal; }
+  .work { padding: 8px 28px; }
+  .feature, .feature:first-child, .feature--pile {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 44px 0;
+  }
+  .feature--rev > .glow { order: 0; }
+  .feature h3 { font-size: 26px; }
+  .pile { height: auto; display: grid; gap: 22px; padding: 12px 6px; }
+  .pile .glow, .glow--tall, .glow--mid, .glow--front {
+    position: static;
+    width: 100%;
+    --rot: 0deg;
+  }
+  .pile .clip { box-shadow: none; }
+  .glow--tall { width: 58%; justify-self: center; }
+  .gh-stars { top: 14px; right: 10px; }
+  /* в одноколоночной раскладке spotlight по краям не работает — отключаем */
+  .glow::before,
+  .glow::after { display: none; }
+}
+</style>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110731912', 'ym');
+
+    ym(110731912, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<!-- /Yandex.Metrika counter -->
+</head>
+<body>
+<noscript><div><img src="https://mc.yandex.ru/watch/110731912" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+
+<main class="panel">
+
+  <!-- HERO — чёрная пропасть, логотип в тексте -->
+  <header class="chasm chasm--hero">
+    <div class="stars" aria-hidden="true"></div>
+    <div class="gh-stars">
+      <a class="github-button" href="https://github.com/squaretus/blik" data-color-scheme="dark" data-size="large" data-show-count="true" aria-label="Star squaretus/blik on GitHub">Star</a>
+    </div>
+    <h1 class="wordmark">
+      <span class="dim">от</span><span class="orb"></span><span>blik,</span><span class="dim">&nbsp;который важен</span>
+    </h1>
+    <p class="lede">Температуры, загрузка CPU и GPU, память, диск и обороты кулеров — в&nbsp;реальном времени, с&nbsp;локальной историей метрик.</p>
+  </header>
+
+  <!-- СКРОЛЛ-НАРРАТИВ -->
+  <section class="work">
+
+    <article class="feature">
+      <div>
+        <div class="kicker">01 · обзор</div>
+        <h3>всё главное — одним экраном</h3>
+        <p>Температуры и загрузка CPU, GPU, RAM, VRAM и диска собраны в компактную сетку KPI. Открыл — и сразу видно состояние машины.</p>
+      </div>
+      <div class="glow"><figure class="clip"><img src="media/overview.avif" alt="Вкладка «Обзор»: сетка KPI с температурами и загрузкой CPU, GPU, памяти и диска"></figure></div>
+    </article>
+
+    <article class="feature feature--rev">
+      <div>
+        <div class="kicker">02 · температура</div>
+        <h3>каждый датчик под контролем</h3>
+        <p>CPU и E-Core, GPU, SSD, батарея и десятки сенсоров читаются напрямую через SMC. Цветовая индикация — зелёный, жёлтый, красный.</p>
+      </div>
+      <div class="glow"><figure class="clip"><img src="media/temps.avif" loading="lazy" alt="Вкладка «Температура»: показания сенсоров SMC с цветовой индикацией"></figure></div>
+    </article>
+
+    <article class="feature">
+      <div>
+        <div class="kicker">03 · ресурсы</div>
+        <h3>нагрузка до отдельного ядра</h3>
+        <p>Загрузка P- и E-ядер, GPU и VRAM, память (wired, сжатая, кэш файлов, нагрузка) и скорость чтения-записи диска.</p>
+      </div>
+      <div class="glow"><figure class="clip"><img src="media/resources.avif" loading="lazy" alt="Вкладка «Ресурсы»: загрузка ядер CPU, GPU, памяти и диска"></figure></div>
+    </article>
+
+    <article class="feature feature--rev">
+      <div>
+        <div class="kicker">04 · графики</div>
+        <h3>история, а не только момент</h3>
+        <p>Локальные графики метрик до 7 дней — live-режим и любой прошедший период. Данные не покидают устройство.</p>
+      </div>
+      <div class="glow"><figure class="clip"><img src="media/charts.avif" loading="lazy" alt="Вкладка «Графики»: история метрик с выбором периода"></figure></div>
+    </article>
+
+    <article class="feature feature--pile">
+      <div>
+        <div class="kicker">05 · интерфейсы</div>
+        <h3>в строке меню, в окне, в терминале</h3>
+        <p>Приложение в строке меню, дашборд и CLI-утилита в PATH. Привилегированный XPC-демон делает root-операции — без sudo.</p>
+      </div>
+      <div class="pile">
+        <div class="glow glow--tall">
+          <figure class="clip"><img src="media/iface-tall.png" loading="lazy" alt="Попап blik в строке меню macOS"></figure>
+        </div>
+        <div class="glow glow--mid">
+          <figure class="clip"><img src="media/iface-mid.png" loading="lazy" alt="CLI-утилита blik в терминале"></figure>
+        </div>
+        <div class="glow glow--front">
+          <figure class="clip"><img src="media/iface-front.png" loading="lazy" alt="Окно-дашборд blik"></figure>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- CTA — зеркальная чёрная пропасть -->
+  <section class="chasm chasm--cta">
+    <div class="stars stars--down" aria-hidden="true"></div>
+    <h2><span>Установите</span><span class="orb"></span><span class="name">blik</span></h2>
+    <p class="lede">Скачайте .pkg из последнего релиза — установка через визард, дальше всё работает само.</p>
+    <div class="cta-row">
+      <a class="btn-download" href="https://github.com/squaretus/blik/releases/latest">↓ скачать</a>
+    </div>
+    <footer class="site-footer"><span>© 2026 blik</span></footer>
+  </section>
+
+</main>
+
+<script>
+// spotlight-рамка: локальные координаты курсора для каждой карточки,
+// оттенок слегка плывёт по горизонтали (teal → cyan)
+(function () {
+  var cards = document.querySelectorAll('.glow');
+  document.addEventListener('pointermove', function (e) {
+    for (var i = 0; i < cards.length; i++) {
+      var r = cards[i].getBoundingClientRect();
+      cards[i].style.setProperty('--gx', (e.clientX - r.left).toFixed(2));
+      cards[i].style.setProperty('--gy', (e.clientY - r.top).toFixed(2));
+    }
+    var hue = 168 + (e.clientX / window.innerWidth) * 40;
+    document.documentElement.style.setProperty('--hue', hue.toFixed(1));
+  }, { passive: true });
+})();
+
+// звёздный фон: генерируем слои звёзд (размер, количество, длительность цикла);
+// каждая звезда дублируется со сдвигом +2000px для бесшовной прокрутки
+(function () {
+  var LAYERS = [
+    [160, 1, 60],
+    [55, 2, 100],
+    [22, 3, 140]
+  ];
+  function shadows(count) {
+    var s = [];
+    for (var i = 0; i < count; i++) {
+      var x = (Math.random() * 100).toFixed(2) + 'vw';
+      var y = Math.round(Math.random() * 2000);
+      var c = 'hsl(0 0% 100% / ' + (0.25 + Math.random() * 0.6).toFixed(2) + ')';
+      s.push(x + ' ' + y + 'px ' + c, x + ' ' + (y + 2000) + 'px ' + c);
+    }
+    return s.join(', ');
+  }
+  var wraps = document.querySelectorAll('.stars');
+  for (var w = 0; w < wraps.length; w++) {
+    for (var l = 0; l < LAYERS.length; l++) {
+      var d = document.createElement('div');
+      d.className = 'stars__layer';
+      d.style.width = d.style.height = LAYERS[l][1] + 'px';
+      d.style.boxShadow = shadows(LAYERS[l][0]);
+      d.style.animationDuration = LAYERS[l][2] + 's';
+      wraps[w].appendChild(d);
+    }
+  }
+})();
+
+// цели Яндекс.Метрики; переходы по внешним ссылкам считает trackLinks
+(function () {
+  function goal(name) { if (window.ym) ym(110731912, 'reachGoal', name); }
+
+  var download = document.querySelector('.btn-download');
+
+  // клик по кнопке «скачать»
+  download.addEventListener('click', function () { goal('download_click'); });
+
+  // долистал до кнопки «скачать» (один раз за визит)
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries, obs) {
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].isIntersecting) {
+          goal('scroll_to_download');
+          obs.disconnect();
+          break;
+        }
+      }
+    }, { threshold: 0.5 }).observe(download);
+  }
+
+  // клик по баджу GitHub stars: кнопка живёт в кросс-доменном iframe
+  // (закрытый shadow root), клик внутри него ловится только по уходу
+  // фокуса из окна на элемент внутри .gh-stars
+  window.addEventListener('blur', function () {
+    var ae = document.activeElement;
+    if (ae && ae.closest && ae.closest('.gh-stars')) goal('github_star_click');
+  });
+})();
+</script>
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+</body>
+</html>

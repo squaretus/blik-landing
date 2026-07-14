@@ -1,35 +1,26 @@
 # blik-landing — лэндинг приложения Blik (GitHub Pages)
 
 ## Стек
-- Next.js 15 (App Router, `output: 'export'` — чистая статика), React 19
-- Tailwind CSS v4 (CSS-first, `@import "tailwindcss"` в `globals.css`, без tailwind.config)
-- framer-motion (анимации секций), vitest + Testing Library (тесты)
-- Деплой: GitHub Actions → GitHub Pages, домен `blik.app` (`public/CNAME`)
+- Чистая статика: один `index.html` (стили и скрипт инлайном), без фреймворков, сборки и npm-зависимостей
+- Шрифт: JetBrains Mono (variable woff2, self-hosted в `fonts/`, разбит по unicode-range сабсетам)
+- Медиа: зацикленные анимированные AVIF (`ffmpeg` + `libsvtav1`, `-loop 0`) и PNG в `media/`
+- Тесты: `node --test` (`tests/*.test.mjs`), без зависимостей
+- Деплой: GitHub Actions → GitHub Pages, домен `blik.app` (файл `CNAME` в корне)
 
 ## Команды
 ```bash
-npm run dev        # dev-сервер
-npm run build      # static export → out/
-npm test           # vitest run
-npm run lint       # eslint
-npx tsc --noEmit   # typecheck
-npm start          # npx serve out — локальный просмотр экспорта
-```
-
-## Структура
-```
-src/app/            — layout (шрифты, theme-init script), page (→ HomePage), globals.css, sitemap, robots
-src/components/landing/HomePage.tsx — весь лэндинг (Navbar, Hero, Features, Showcase, CTA, Footer)
-src/components/ui/  — ThemeToggle, NeonBorder, Logo, Button, Spinner
-src/lib/utils.ts    — cn()
-public/             — CNAME, фавиконки, landing/assets/ (скриншоты)
-.github/workflows/deploy.yml — lint+tsc+test+build → Pages
+python3 -m http.server 8000       # локальный просмотр
+node --test 'tests/*.test.mjs'    # тесты
+ffmpeg -i in.mov -vf "fps=15,scale=1180:-2" -c:v libsvtav1 -crf 30 -preset 6 -an -loop 0 media/out.avif  # видео → AVIF
 ```
 
 ## Правила
-- Бэкенда НЕТ: это статический сайт. Никаких fetch к API, auth, аналитики.
-- Кнопки «Скачать» ведут на `https://github.com/squaretus/blik/releases/latest` — не менять на относительные пути.
-- `sitemap.ts`/`robots.ts` обязаны иметь `export const dynamic = 'force-static'` (иначе `output: 'export'` падает).
-- `next/image` работает только с `images.unoptimized: true` (см. `next.config.js`).
-- Тема: инлайн-скрипт в `layout.tsx` (localStorage + prefers-color-scheme) до гидрации; фавиконка меняется вместе с темой.
+- Бэкенда НЕТ: статический сайт. Никаких fetch к API, auth, аналитики.
+- Кнопка «скачать blik» ведёт на `https://github.com/squaretus/blik/releases/latest` — не менять на относительные пути.
+- Дизайн: тёмная тема (#05070c/#0A0D14), акцент #2FB3B8, всё в JetBrains Mono. Единственная страница — `index.html`, правки стилей вносить в его `<style>`.
+- Spotlight-рамка (`.glow`) — одна общая обёртка для ВСЕХ медиа-карточек (видео и картинки интерфейсов), vanilla-адаптация 21st.dev spotlight-card: JS ставит `--gx/--gy` per-card, псевдоэлементы с отрицательным z-index рисуют кольцо и blur-ореол ПОЗАДИ карточек (видны только по внешним краям). Для этого `.glow` не создаёт stacking context: без transform/z-index, поворот в куче — на `.clip` и псевдоэлементах через `--rot`. Отключена на `hover: none` и в мобильной раскладке (≤860px).
+- Звёздный фон (`.stars`) — vanilla-адаптация 21st.dev bundui stars: JS генерирует 3 слоя box-shadow-звёзд (1/2/3px), бесшовный цикл 2000px. На hero звёзды плывут вверх, в CTA — вниз (`.stars--down`). Подложка секций (радиальные градиенты) не меняется. Отключается при `prefers-reduced-motion`.
+- Бадж GitHub stars — официальный embed `buttons.github.io/buttons.js` (`data-color-scheme="dark"`); рендерится в closed shadow root, поэтому в DOM выглядит пустым `<span>` — это норма.
+- Исходники медиа лежат в `source_docs_for_landing/` (в .gitignore, в репо не коммитятся) — в `media/` кладутся уже сконвертированные файлы.
+- Воркфлоу собирает `_site/` из явного списка файлов (`index.html CNAME favicon-*.svg fonts media`) — новые публикуемые файлы/каталоги нужно добавить в этот список в `deploy.yml`.
 - Коммиты: см. память проекта — в этом репо коммиты идут с трейлером `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>` (явное требование пользователя).
