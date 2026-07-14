@@ -70,3 +70,30 @@ test('Яндекс.Метрика: счётчик 110731912 и цели подк
 test('CNAME указывает на blik-app.ru', () => {
   assert.equal(readFileSync(join(root, 'CNAME'), 'utf8').trim(), 'blik-app.ru');
 });
+
+test('SEO: robots.txt открыт для всех и ссылается на sitemap', () => {
+  const robots = readFileSync(join(root, 'robots.txt'), 'utf8');
+  assert.match(robots, /User-agent: \*\nAllow: \//);
+  assert.match(robots, /Sitemap: https:\/\/blik-app\.ru\/sitemap\.xml/);
+});
+
+test('SEO: sitemap.xml содержит главную страницу', () => {
+  const sitemap = readFileSync(join(root, 'sitemap.xml'), 'utf8');
+  assert.match(sitemap, /<loc>https:\/\/blik-app\.ru\/<\/loc>/);
+});
+
+test('SEO: canonical, og:image и валидный JSON-LD', () => {
+  assert.match(html, /<link rel="canonical" href="https:\/\/blik-app\.ru\/">/);
+  assert.match(html, /<meta property="og:image" content="https:\/\/blik-app\.ru\/media\/iface-front\.png">/);
+  assert.match(html, /<meta name="robots" content="index, follow[^"]*">/);
+  const ld = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+  assert.ok(ld, 'нет JSON-LD');
+  const data = JSON.parse(ld[1]);
+  assert.equal(data['@type'], 'SoftwareApplication');
+  assert.equal(data.operatingSystem, 'macOS');
+});
+
+test('SEO: robots.txt и sitemap.xml попадают в деплой', () => {
+  const deploy = readFileSync(join(root, '.github/workflows/deploy.yml'), 'utf8');
+  assert.match(deploy, /cp -r [^\n]*robots\.txt[^\n]*sitemap\.xml[^\n]*_site\//);
+});
