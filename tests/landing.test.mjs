@@ -65,6 +65,8 @@ test('Яндекс.Метрика: счётчик 110731912 и цели подк
   for (const goal of ['download_click', 'scroll_to_download', 'github_star_click']) {
     assert.ok(html.includes(`'${goal}'`), `нет цели ${goal}`);
   }
+  // без новой вкладки reachGoal проигрывает гонку с выгрузкой страницы
+  assert.match(html, /class="btn-download"[^>]*target="_blank"[^>]*rel="noopener"/);
 });
 
 test('CNAME указывает на blik-app.ru', () => {
