@@ -5,7 +5,7 @@
 - Шрифт: JetBrains Mono (variable woff2, self-hosted в `fonts/`, разбит по unicode-range сабсетам)
 - Медиа: зацикленные анимированные AVIF (`ffmpeg` + `libsvtav1`, `-loop 0`) и PNG в `media/`
 - Тесты: `node --test` (`tests/*.test.mjs`), без зависимостей
-- Деплой: GitHub Actions → GitHub Pages, домен `blik.app` (файл `CNAME` в корне)
+- Деплой: GitHub Actions → GitHub Pages, домен `blik-app.ru` (файл `CNAME` в корне)
 
 ## Команды
 ```bash
