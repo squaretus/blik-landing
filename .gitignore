@@ -2,3 +2,4 @@
 /_site/
 /source_docs_for_landing/
 /.next/
+.claude/settings.local.json
