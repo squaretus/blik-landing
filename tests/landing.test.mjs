@@ -100,6 +100,19 @@ test('SEO: robots.txt и sitemap.xml попадают в деплой', () => {
   assert.match(deploy, /cp -r [^\n]*robots\.txt[^\n]*sitemap\.xml[^\n]*_site\//);
 });
 
+test('favicon: растровые иконки для поисковых роботов подключены и попадают в деплой', () => {
+  // YandexBot/Googlebot дёргают /favicon.ico и плохо переваривают SVG-фавиконки —
+  // нужны растровые файлы (ico + png ≥120 для Яндекса) в корне.
+  const rasters = ['favicon.ico', 'favicon-96x96.png', 'favicon-192x192.png', 'apple-touch-icon.png'];
+  const deploy = readFileSync(join(root, '.github/workflows/deploy.yml'), 'utf8');
+  for (const f of rasters) {
+    assert.ok(existsSync(join(root, f)), `нет файла ${f}`);
+    assert.ok(html.includes(`href="${f}"`), `${f} не подключён в index.html`);
+    assert.ok(deploy.includes(f), `${f} не в списке публикации deploy.yml`);
+  }
+  assert.match(html, /<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon\.png">/);
+});
+
 test('IndexNow: ключ-файл существует, валиден и попадает в деплой', () => {
   const key = 'e97bfc5778e54c1574e7682f01a5c514';
   assert.equal(readFileSync(join(root, `${key}.txt`), 'utf8').trim(), key);
